@@ -21,7 +21,7 @@ app.use(
           try {
             dataList = JSON.parse(data)
           } catch (err) {
-            dataList = []
+            //
           }
           dataList.unshift({
             info: ctx.request.body,
