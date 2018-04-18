@@ -1,0 +1,26 @@
+{
+  "name": "data-saver",
+  "version": "1.0.0",
+  "main": "./index.js",
+  "scripts": {
+    "start": "node ./index.js",
+    "watch": "nodemon ./index.js"
+  },
+  "author": "Giuseppe Menti <mentifg@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@koa/cors": "^2.2.1",
+    "koa": "^2.4.1",
+    "koa-bodyparser": "^4.2.0",
+    "koa-router": "^7.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.0",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "nodemon": "^1.17.2"
+  }
+}
