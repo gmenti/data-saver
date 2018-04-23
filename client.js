@@ -7,7 +7,7 @@ module.exports = class Client {
   async get (identifier = '') {
     return (await this.instance.get(`/${identifier}`)).data
   }
-  async save (data) {
-    await this.instance.post('/', data)
+  async save (identifier, data) {
+    await this.instance.post(`/${identifier}`, data)
   }
 }
