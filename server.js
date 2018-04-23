@@ -1,12 +1,18 @@
 const Koa = require('koa')
 const Router = require('koa-router')
+const mongoose = require('mongoose')
 const fs = require('fs')
 const path = require('path')
 
-const FILE_PATH = path.join(__dirname, 'data.json')
-if (!fs.existsSync(FILE_PATH)) {
-  fs.writeFileSync(FILE_PATH, JSON.stringify([]))
-}
+const schema = new mongoose.Schema({
+  identifier: String,
+  data: Object,
+  createdAt: Date
+})
+
+schema.index({ createdAt: -1 })
+
+const Info = mongoose.model('Info', schema)
 
 const app = new Koa()
 app.use(require('@koa/cors')())
@@ -14,46 +20,26 @@ app.use(require('koa-bodyparser')())
 
 app.use(
   (new Router())
-    .post('/', ctx => new Promise(resolve => {
-      fs.readFile(FILE_PATH, (err, data) => {
-        var dataList = []
-        if (!err) {
-          try {
-            dataList = JSON.parse(data)
-          } catch (err) {
-            //
-          }
-          dataList.unshift({
-            info: ctx.request.body,
-            date: new Date()
-          })
-          ctx.status = 204
-          ctx.body = null
-          fs.writeFile(FILE_PATH, JSON.stringify(dataList), resolve)
-        } else {
-          ctx.body = { message: err.message }
-          ctx.status = 500
-          resolve()
-        }
+    .post('/:identifier', async ctx => {
+      const info = new Info({
+        identifier: ctx.params.identifier,
+        data: ctx.request.body,
+        createdAt: new Date()
       })
-    }))
-    .get('/', ctx => new Promise(resolve => {
-      fs.readFile(FILE_PATH, (err, data) => {
-        var dataList = []
-        if (!err) {
-          try {
-            dataList = JSON.parse(data)
-              .sort((data1, data2) => data1.data > data2.data)
-          } catch (err) {
-            //
-          }
-        }
-        ctx.body = dataList
-        ctx.status = 200
-        resolve()
-      })
-    }))
+      await info.save()
+      ctx.body = null
+      ctx.status = 204
+    })
+    .get('/', async ctx => {
+      ctx.body = await Info.find({}).sort({ createdAt: -1 })
+      ctx.status = 200
+    })
+    .get('/:identifier', async ctx => {
+      ctx.body = await Info.find({ identifier: ctx.params.identifier }).sort({ createdAt: -1 })
+      ctx.status = 200
+    })
     .routes()
 )
 
 app.listen(process.env.PORT || 4000)
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017')

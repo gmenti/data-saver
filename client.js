@@ -4,8 +4,8 @@ module.exports = class Client {
   constructor (baseURL) {
     this.instance = axios.create({ baseURL })
   }
-  async all () {
-    return (await this.instance.get('/')).data
+  async get (identifier = '') {
+    return (await this.instance.get(`/${identifier}`)).data
   }
   async save (data) {
     await this.instance.post('/', data)
